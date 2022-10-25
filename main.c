@@ -89,6 +89,7 @@ int main(int ac, char **av)
 	else
 	{
 		printf("Arguman Sayisi fazla veya az\n");
-		return (0);
+		return (-1);
 	}
+	return (0);
 }
