@@ -16,7 +16,7 @@ typedef struct s_philo
 	int				l_fork;
 	int				r_fork;
 	int				p_id;
-	int				total_meal;
+	int				eat_count;
 	struct t_sim	*sim;
 }	t_philo;
 
@@ -25,6 +25,7 @@ typedef struct s_sim
 	pthread_mutex_t	print_lock;
 	pthread_mutex_t	*fork_lock;
 	t_philo			*philo;
+	int				total_meal;
 	int				is_died;
 	int				philo_num;
 	long			start_time;

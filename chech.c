@@ -12,9 +12,17 @@ int check_args(t_sim *sim)
 
 int check_meal(t_sim *sim)
 {
-    if (sim->philo->total_meal == sim->philo_num)
+    int p_id_;
+
+    p_id_ = 0;
+    if (sim->total_meal > 0)
     {
-        
+        while (p_id_ < sim->philo_num)
+        {
+            if (sim->philo[p_id_].eat_count == sim->must_eat)
+                sim->total_meal++;
+            p_id_++;
+        }
     }
     return (0);
 }
