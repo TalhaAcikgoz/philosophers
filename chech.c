@@ -23,6 +23,11 @@ int check_meal(t_sim *sim)
                 sim->total_meal++;
             p_id_++;
         }
+        if (sim->total_meal >= sim->philo_num)
+        {
+            sim->is_died = 1;
+            return (1);
+        }
     }
     return (0);
 }
