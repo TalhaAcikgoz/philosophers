@@ -17,6 +17,7 @@ typedef struct s_philo
 	int				r_fork;
 	int				p_id;
 	int				eat_count;
+	long			last_eatTime;
 	struct t_sim	*sim;
 }	t_philo;
 
@@ -47,5 +48,7 @@ void	*loop(void *ptr);
 int		start_dinner(t_sim *sim);
 void	eat(t_sim *sim, int p_id);
 void	ft_wait(long long time, t_sim *sim);
+void	*observer(void *ptr);
+int		check_meal(t_sim *sim);
 
 #endif
