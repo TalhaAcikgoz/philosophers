@@ -62,5 +62,4 @@ int main(int ac, char **av)
 		printf("Arguman Sayisi fazla veya az\n");
 		return (0);
 	}
-    while (1);
 }

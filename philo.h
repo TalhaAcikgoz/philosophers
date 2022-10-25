@@ -43,7 +43,7 @@ long	get_time(void);
 int		start_dinner(t_sim *sim);
 void	print(t_sim *sim, char *state, char c, int p_num);
 void	*loop(void *ptr);
-void	eat(t_sim *sim);
+void	eat(t_sim *sim, int p_id);
 int		start_dinner(t_sim *sim);
 void	ft_wait(long long time, t_sim *sim);
 
