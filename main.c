@@ -22,6 +22,7 @@ t_sim	*sim_init(t_sim *sim, int ac, char **av)
 	sim->time_sleep = atoi(av[4]);
 	if (ac == 6)
 		sim->must_eat = atoi(av[5]);
+	sim->total_meal = 0;
 	pthread_mutex_init(&sim->print_lock, NULL);
 	return (sim);
 }
