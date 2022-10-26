@@ -14,13 +14,14 @@
 	}
 } */
 
-t_sim	*sim_init(t_sim *sim, int ac, char **av)
+void	sim_init(t_sim *sim, int ac, char **av)
 {
 	sim->philo_num 	= ft_atoi(av[1]);
 	if (sim->philo_num == 1)
 	{
 		printf("Philo 1 died...\n");
-		return (NULL);
+		free(sim);
+		return ;
 	}
 	sim->time_die 	= ft_atoi(av[2]);
 	sim->time_eat 	= ft_atoi(av[3]);
@@ -32,26 +33,22 @@ t_sim	*sim_init(t_sim *sim, int ac, char **av)
 	sim->is_died = 0;
 	sim->fork_lock = malloc(sizeof(pthread_mutex_t) * sim->philo_num);
 	pthread_mutex_init(&sim->print_lock, NULL);
-	return (sim);
 }
 
-void philo_init(t_sim *sim)
+void philo_init(t_sim *sim, t_philo *philo)
 {
 	int	i;
 
 	i=0;
-	if (!(sim->philo = (t_philo *)malloc(sizeof(t_philo) * sim->philo_num )))
-		free_func(sim);
-    /* if (!(sim->fork_lock = malloc(sizeof(pthread_mutex_t) * sim->philo_num)))
-		free_func(sim); //sorustur */
+	
 	while (i < sim->philo_num)
 	{
-		sim->philo[i].p_id = i + 1;
-		sim->philo[i].l_fork = i;
-		sim->philo[i].eat_count = 0;
-		sim->philo[i].last_eatTime = get_time();
-		sim->philo[i].r_fork = i + 1 % sim->philo_num;
-		sim->philo[i].sim = (struct t_sim *)sim;
+		philo[i].p_id = i;
+		philo[i].l_fork = i;
+		philo[i].r_fork = i + 1 % sim->philo_num;
+		philo[i].eat_count = 0;
+		philo[i].last_eatTime = get_time();
+		philo[i].sim = sim;
 		pthread_mutex_init(&sim->fork_lock[i], NULL);
 		i++;
 	}
@@ -77,14 +74,21 @@ int main(int ac, char **av)
 {
 	if (ac == 5 || ac == 6)
 	{
+		t_philo *philo;
 		t_sim *sim;
+
 		sim =(t_sim *)malloc(sizeof(t_sim));
 		if (!sim)
+		{
+			free(sim);
+			return(0);
+		}
+		sim_init(sim, ac, av);
+		if (!(philo = (t_philo *)malloc(sizeof(t_philo) * sim->philo_num )))
 			free_func(sim);
-		sim = sim_init(sim, ac, av);
-		philo_init(sim);
-		start_dinner(sim);
-		finish_dinner(sim->philo, sim);
+		philo_init(sim, philo);
+		start_dinner(philo);
+		finish_dinner(philo, sim);
 	}
 	else
 	{
