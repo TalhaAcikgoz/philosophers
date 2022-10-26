@@ -25,9 +25,7 @@ int ft_atoi(char *str)
 
 void    free_func(t_sim *sim)
 {
-	free(sim->philo);
 	free(sim);
-	(void)sim;
 	return ;
 }
 

@@ -1,91 +1,87 @@
 #include "philo.h"
 
-void	eat(t_sim *sim, int p_id)
+void	eat(t_philo *philo, int p_id)
 {
-	pthread_mutex_lock(&sim->fork_lock[sim->philo->l_fork]);
-	pthread_mutex_lock(&sim->fork_lock[sim->philo->r_fork]);
-	print(sim, "has taken left fork", 'e', p_id);
-	print(sim, "has taken right fork", 'e', p_id);
-	print(sim, "is eating", 'x', p_id);
-	ft_wait(sim->time_eat, sim);
-	sim->philo->last_eatTime = get_time();
-	pthread_mutex_unlock(&sim->fork_lock[sim->philo->l_fork]);
-	pthread_mutex_unlock(&sim->fork_lock[sim->philo->r_fork]);
-	print(sim, "has release left fork", 'd', p_id);
-	print(sim, "has release right fork", 'd', p_id);
+	pthread_mutex_lock(&philo->sim->fork_lock[philo->l_fork]);
+	pthread_mutex_lock(&philo->sim->fork_lock[philo->r_fork]);
+	print(philo->sim, "has taken left fork", 'e', p_id);
+	print(philo->sim, "has taken right fork", 'e', p_id);
+	print(philo->sim, "is eating", 'x', p_id);
+	ft_wait(philo->sim->time_eat, philo->sim);
+	philo->last_eatTime = get_time();
+	pthread_mutex_unlock(&philo->sim->fork_lock[philo->l_fork]);
+	pthread_mutex_unlock(&philo->sim->fork_lock[philo->r_fork]);
+	print(philo->sim, "has release left fork", 'd', p_id);
+	print(philo->sim, "has release right fork", 'd', p_id);
 	return ;
 }
 
-void	*observer(void *ptr)
+void	observer(void *ptr)
 {
 	t_philo *philo;
-	t_sim	*sim;
 	int		_phi_id;
 
-	
 	philo = (t_philo *)ptr;
-	sim = (t_sim *)philo->sim;
-	while (!check_meal(sim))
+	while (!check_meal(philo))
 	{
 		_phi_id = 0;
-		while (_phi_id < sim->philo_num)
+		while (_phi_id < philo->sim->philo_num)
 		{
-			if (get_time() - philo[_phi_id].last_eatTime > sim->time_die)
+			// printf("lasteat--%ld\n", philo[_phi_id].last_eatTime - get_time());
+			// printf("gettime--%ld\n", get_time());
+			// printf("timedie--%d\n",philo->sim->time_die);
+			if (( philo[_phi_id].last_eatTime - get_time() > philo->sim->time_die))
 			{
-				//printf("%ld  %ld\n", get_time(), sim->philo[_phi_id].last_eatTime);
-				print(sim, "philo is died", 'd', _phi_id);
-				sim->is_died = 1;
-				return (NULL);
+				print(philo->sim, "---philo is died---", 'd', _phi_id);
+				philo->sim->is_died = 1;
+				return ;
 			}
 			_phi_id++;
 		}
-		ft_wait(10, sim);
+		ft_wait(10, philo->sim);
+		return ;
 	}
-	return (NULL);
 }
 
 void	*loop(void *ptr)
 {
 	t_philo	*philo;
-	t_sim   *sim;
-	
+
 	philo = ptr;
-	sim = (t_sim *)philo->sim;
-	if (sim->philo->p_id % 2 != 0)
+	if (philo->p_id % 2 != 0)
 		usleep(1600);
-	while (sim->is_died != 1)
+	while (philo->sim->is_died != 1)
 	{
-		eat(sim, philo->p_id);
-		print(sim, "is sleeping", 'f', philo->p_id);
-		ft_wait(sim->time_sleep, sim);
-		print(sim, "is thinking", 'f', philo->p_id);
+		eat(philo, philo->p_id);
+		ft_wait(philo->sim->time_sleep, philo->sim);
+		print(philo->sim, "is sleeping", 'f', philo->p_id);
+		print(philo->sim, "is thinking", 'f', philo->p_id);
 		usleep(1000);
 		philo->eat_count++;
+		observer(philo);
 	}
+	printf("%d is_died+++\n", philo->sim->is_died);
 	return (NULL);
 }
 
-int	start_dinner(t_sim *sim)
+int	start_dinner(t_philo *philo)
 {
 	int     p_id_;
-	t_philo *philo;
-	pthread_t monitor;
+	// pthread_t monitor;
 
-	philo = sim->philo;
 	p_id_ = -1;
-	sim->start_time = get_time();
-	while (++p_id_ < sim->philo_num)
+	philo->sim->start_time = get_time();
+	while (++p_id_ < philo->sim->philo_num)
 	{
-		if (pthread_create(&philo[p_id_].thread, NULL, &loop, &philo[p_id_]))
+		if (pthread_create(&philo[p_id_].thread, NULL, &loop, philo + p_id_))
 			return (-1);
 	}
-	if(pthread_create(&monitor, NULL, &observer, philo) == -1)
-		return (-1);
+	// if (!pthread_create(&monitor, NULL, &observer, philo))
 	p_id_ = -1;
-	while (++p_id_ < sim->philo_num)
+	while (++p_id_ < philo->sim->philo_num)
 	{
-		pthread_join(sim->philo[p_id_].thread, NULL);
+		pthread_join(philo[p_id_].thread, NULL);
 	}
-	pthread_join(monitor, NULL);
+	// pthread_join(monitor, NULL);
 	return (1);
 }
