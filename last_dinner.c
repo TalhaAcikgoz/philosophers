@@ -27,7 +27,6 @@ void	*observer(void *ptr)
 		_phi_id = 0;
 		while (_phi_id < philo->sim->philo_num)
 		{
-			// printf("p_id %d\nlast eat time %ld\nget-eat %ld\n",_phi_id, philo[_phi_id].last_eatTime, get_time() - philo[_phi_id].last_eatTime);
 			if (( philo[_phi_id].last_eatTime - get_time() > philo->sim->time_die))
 			{
 				print(philo->sim, "---philo is died---", 'd', _phi_id);
@@ -37,7 +36,6 @@ void	*observer(void *ptr)
 			_phi_id++;
 		}
 		ft_wait(10, philo->sim);
-		// return (NULL);
 	}
 	return (NULL);
 }
@@ -55,9 +53,7 @@ void	*loop(void *ptr)
 		print(philo->sim, "is sleeping", 'f', philo->p_id);
 		ft_wait(philo->sim->time_sleep, philo->sim);
 		print(philo->sim, "is thinking", 'f', philo->p_id);
-		ft_wait(100, philo->sim);
 		philo->eat_count++;
-		// observer(philo);
 	}
 	return (NULL);
 }
