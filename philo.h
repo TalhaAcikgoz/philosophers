@@ -39,7 +39,7 @@ void 	philo_init(t_sim *sim, t_philo *philo);
 void	finish_dinner(t_philo *philo, t_sim *data);
 //last_dinner
 void	eat(t_philo *philo, int p_id);
-void	observer(void *ptr);
+void	*observer(void *ptr);
 void	*loop(void *ptr);
 int		start_dinner(t_philo *philo);
 

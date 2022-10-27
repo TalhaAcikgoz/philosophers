@@ -16,7 +16,7 @@ void	eat(t_philo *philo, int p_id)
 	return ;
 }
 
-void	observer(void *ptr)
+void	*observer(void *ptr)
 {
 	t_philo *philo;
 	int		_phi_id;
@@ -27,20 +27,19 @@ void	observer(void *ptr)
 		_phi_id = 0;
 		while (_phi_id < philo->sim->philo_num)
 		{
-			// printf("lasteat--%ld\n", philo[_phi_id].last_eatTime - get_time());
-			// printf("gettime--%ld\n", get_time());
-			// printf("timedie--%d\n",philo->sim->time_die);
+			// printf("p_id %d\nlast eat time %ld\nget-eat %ld\n",_phi_id, philo[_phi_id].last_eatTime, get_time() - philo[_phi_id].last_eatTime);
 			if (( philo[_phi_id].last_eatTime - get_time() > philo->sim->time_die))
 			{
 				print(philo->sim, "---philo is died---", 'd', _phi_id);
 				philo->sim->is_died = 1;
-				return ;
+				return (NULL);
 			}
 			_phi_id++;
 		}
 		ft_wait(10, philo->sim);
-		return ;
+		// return (NULL);
 	}
+	return (NULL);
 }
 
 void	*loop(void *ptr)
@@ -53,21 +52,20 @@ void	*loop(void *ptr)
 	while (philo->sim->is_died != 1)
 	{
 		eat(philo, philo->p_id);
-		ft_wait(philo->sim->time_sleep, philo->sim);
 		print(philo->sim, "is sleeping", 'f', philo->p_id);
+		ft_wait(philo->sim->time_sleep, philo->sim);
 		print(philo->sim, "is thinking", 'f', philo->p_id);
-		usleep(1000);
+		ft_wait(100, philo->sim);
 		philo->eat_count++;
-		observer(philo);
+		// observer(philo);
 	}
-	printf("%d is_died+++\n", philo->sim->is_died);
 	return (NULL);
 }
 
 int	start_dinner(t_philo *philo)
 {
 	int     p_id_;
-	// pthread_t monitor;
+	pthread_t monitor;
 
 	p_id_ = -1;
 	philo->sim->start_time = get_time();
@@ -76,12 +74,12 @@ int	start_dinner(t_philo *philo)
 		if (pthread_create(&philo[p_id_].thread, NULL, &loop, philo + p_id_))
 			return (-1);
 	}
-	// if (!pthread_create(&monitor, NULL, &observer, philo))
+	if (!pthread_create(&monitor, NULL, &observer, philo))
 	p_id_ = -1;
 	while (++p_id_ < philo->sim->philo_num)
 	{
 		pthread_join(philo[p_id_].thread, NULL);
 	}
-	// pthread_join(monitor, NULL);
+	pthread_join(monitor, NULL);
 	return (1);
 }
