@@ -1,19 +1,5 @@
 #include "philo.h"
 
-/* void	write_philo(t_sim *sim)
-{
-	int t;
-	int	i;
-	i=0;
-	while (i < sim->philo_num)
-	{
-		t = sim->philo[i].l_fork;
-		//printf("%d ", t);
-		//fflush(stdout);
-		i++;
-	}
-} */
-
 void	sim_init(t_sim *sim, int ac, char **av)
 {
 	sim->philo_num 	= ft_atoi(av[1]);
